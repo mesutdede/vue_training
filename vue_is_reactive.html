@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue"></script>
+    <title>Vue 101</title>
+</head>
+<body>
+
+    <div id="appComponent" style="text-align: center;">
+        <h1>Şu anda çalıştığım kitap</h1>
+        <p>{{bookName}}</p>
+        <p>{{startDate}}</p>
+
+        <p>{{bookName.split('').reverse().join('')}}</p>
+    </div>
+
+    <script type="text/javascript">
+        var app = new Vue({
+            el: '#appComponent',
+            data: {
+                bookName: 'Rust programming Cookbook',
+                startDate: 'Today'
+            }
+        })
+    </script>
+</body>
+</html>

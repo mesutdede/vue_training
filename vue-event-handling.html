@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue"></script>
+    <title>Vue Event Handling</title>
+</head>
+
+<body>
+    <!--
+        Sayfadaki olaylar v-on direktifi kontrollere bağlanabilir.
+        Örnekte kitap fiyatını artırmak ve azaltmak için iki button ve click olayları kullanılmaktadır.
+    -->
+    <div id="app" style="text-align: center;">
+        <h1> {{category}} Kategorisindeki Ürünler </h1>
+
+        <div v-for="book in books" :key="book.id">
+            <p>
+                <!-- 
+                    CSS stillerini de veriye bağlayabiliriz.
+                    span elementinin arkaplan rengini belirleyen backgrounColor değeri o anki book nesnesinin color özelliğine bağlanmıştır.
+                -->
+                <span :style="{backgroundColor: book.color}" style="width: 15px; height: 15px; display: inline-grid;"></span>
+                {{book.title}}
+                <i> {{book.publisher}} - ${{book.listPrice}} </i>
+                <!--
+                    Fiyat artırma işini üstlenen click olayı gerçekleştiğinde ifade içerisindeki kod çalışır. Bulunulan book nesnesinin listPrice değeri 1 artar.
+                -->
+                <button v-on:click="book.listPrice+=1">+</button>
+                <!--
+                    Ancak olayları aşağıdaki gibi fonksiyonlara devrederek kullanmak daha doğrudur.
+                    Bu kez button click olayı gerçekleştiğinde book.id değerini alan decreasePrice metodu çağrılır.
+                    Bu metod Vue nesnesinin opsiyonel parametrelerinden olan methods içerisinde tanımlanır.
+                    v-on direktifi aşağıdaki gibi @ ifadesi ile daha kısa şekilde yazılabilir.
+                    Örnekte disabled niteliği de indirim yapılıp yapılmayacağını belirten incAvailable düğmesine bağlanmıştır.
+                    Mesela 2 numaralı ürün için indirim uygulanamaz.
+                -->
+                <button @click="decreasePrice(book.id)" :disabled="!book.incAvailable">-</button>
+            </p>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var app = new Vue({
+            el: '#app',
+            data: {
+                category: 'Kitap',
+                books: [
+                    { id: 0, title: "Programming C# for Beginners", publisher: "Wrox", listPrice: 19.95, level: 100, incAvailable: true, color: "blue" },
+                    { id: 1, title: "Patterns of Enterprise Application Architecture", publisher: "Addison Wesley", listPrice: 34.50, level: 300, incAvailable: true, color: "red" },
+                    { id: 2, title: "Game Engine Architecture", publisher: "Gregory", listPrice: 45.50, level: 300, incAvailable: false, color: "red" },
+                ]
+            },
+            methods: {
+                /*
+                    button click olayı gerçekleştiğinde çalıştırılan metot.
+                */
+               decreasePrice(id){
+                   console.log(id, ". eleman için 1 dolar indirim.");
+                   this.books[id].listPrice -= 1;
+               }
+            }
+        })
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue"></script>
+    <title>Vue Components</title>
+</head>
+
+<body>
+
+    <div id="app" style="text-align: left; color: white;">
+        <sportnews></sportnews>
+        <!--
+            Bileşenleri aşağıdaki gibi de kullanabiliriz. book isimli bileşenin verisi app bileşenindeki data içerisinde yer alan json dizisidir.
+            book elementi içerisinde :property_name şeklindeki tanımlamalar ile döngünün dolaştığı book nesnesinin değerleri bileşen içerisine aktarılır.
+            :property_name bilgileri book bileşeninin props özelliğinde tanımlanmıştır.
+             
+            Ek: Alt bileşenden üst bileşene bildirim yollamak.
+            Amaç bir kitabın "Beğendim" butonuna basıldığında app bileşenindeki(üst component) toplam beğeni sayısını artırmak.
+            Bunun için book bileşeninde düğmeye basıldığında, üst bileşene bunu bildirecek şekilde bir mesaj göndermek gerekir.
+            Bu mesaj $emit fonksiyonu ile yollanabilir(book içerisindeki iLikeIt metoduna bakın)
+            @i-like-it niteliğinde belirtilen updateLikeCount fonksiyonu ise alt bileşenlerden birisi i-like-it mesajını yukarı fırlattığında çağırılır.
+            Bu arada hangi book bileşenine basıldığını anlamak için (b,index) çiftindeki index değerini updateLikeCount metoduna parametre olarak verebiliriz.
+        -->
+        <div v-for="(book,index) in books" :key="book.id">
+            <book :book_title="book.title" :book_summary="book.description" :book_authors="book.authors" :book_list_price="book.listPrice" @i-like-it="updateLikeCount(index)">
+
+            </book>
+        </div>
+
+        <p style="color: purple;">Toplamda {{likeCount}} kez beğen düğmelerine bastınız!</p>
+    </div>
+
+    <script type="text/javascript">
+        /*
+            Bu örneğe kadar dikkat edileceği üzere app nesnesinin data, computed, methods gibi özelliklerinin kalabalıklaşmaya başladığını gördük.
+            Yönetilebilir ve modüler yapıdaki bir Vue sayfası için bileşenler(component) kullanmak doğru bir yaklaşımdır.
+            Yani ana sayfadaki component'in alt bileşenlerden oluştuğunu düşünebiliriz.
+            Örnekte iki component tanımlanmış ve app isimli div içerisinde kullanılmıştır.
+             
+            sportnews isimli bileşen oldukça sıradandır. Kendi verisini kullanır.
+            book isimli bileşen ise app bileşenindeki data içeriğini kullanır.
+             
+            Bileşenler component fonksiyonu ile tanımlanır.
+            Her bileşen bir template kullanmalıdır. 
+            template özelliği bir container döndürmelidir(div gibi)
+        */
+
+        Vue.component('sportnews', {
+            template: `
+                <div class='sportnews' style='text-align:left;backgroundColor:purple;'>
+                    <h2> Günün Öne Çıkan Spor Haberi </h2>
+                    <p> <h3> {{title}} </h3> </p>
+                    <p> {{summary}} </p>
+                </div>
+            `,
+            data() {
+                return {
+                    title: "Shane Larkin milli takıma çağırldı.",
+                    summary: "Bir süredir ülkesi ABD'de olan Shane Larkin, Anadolu Efes kampına döndükten sonra doğrudan milli takıma çağırıldı."
+                }
+            },
+        });
+
+        Vue.component('book', {
+            template: `
+                <div class='book' style='text-align:right;backgroundColor:gold;color:purple'>
+                    <p><h3>{{book_title}}</h3></p>
+                    <p>{{book_summary}}, {{book_authors}}<br/>{{book_list_price}} TL</p>
+                    <button v-on:click="iLikeIt">Beğendim</button>
+                </div>
+            `,
+            methods: {
+                iLikeIt() {
+                    console.log('book bileşeninin iLikeIt methodu çağırıldı.');
+                    /*
+                       $emit ile button click olayı tetiklendiğinde üst bileşene i-like-it olayı gerçekleşti şeklinde bir bilgi yollanır.
+                   */
+                    this.$emit('i-like-it');
+                }
+            },
+            props: {
+                book_title: {
+                    type: String,
+                    required: true
+                },
+                book_summary: {
+                    type: String,
+                    required: true
+                },
+                book_authors: {
+                    type: String,
+                    required: true
+                },
+                book_list_price: {
+                    type: Number,
+                    required: true
+                }
+            }
+        });
+
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                likeCount: 0, // Alt bileşenlerdeki düğmeye basıldığında bu değeri artırıyoruz.
+                books: [
+                    {
+                        id: 1001,
+                        title: "Veba",
+                        description: "Camus adı çoğu okur için Yabancı romanıyla özdeşleşir. Ancak yazarın en önemli yapıtı aslında Veba'dır...",
+                        authors: "Albert Camus",
+                        listPrice: 34
+                    },
+                    {
+                        id: 1002,
+                        title: "Mahur Beste",
+                        description: "Mahur Beste'de Tanpınar'ın Huzur ve Sahnenin Dışındakiler adlı romanlarında önemli bir motif olan 'Mahur Beste' teması önemli yer tutar. Mahur Beste, acı bir aşk hikayesinin klasik musiki kalıplarıyla soyutlanmasıdır...",
+                        authors: "Ahmet Hamdi Tanpınar",
+                        listPrice: 23
+                    },
+                    {
+                        id: 1003,
+                        title: "1Q84",
+                        description: "Sarsıcı bir yolculuğa hazır mısınız? Öyleyse kemerlerinizi bağlayın. Erkekleri, titizlikle geliştirdiği bir yöntemle öteki dünyaya gönderen genç bir kadınla tanışacaksınız. Ve amansız bir takiple onun peşine düşen fanatik bir cemaatin müritleriyle…",
+                        authors: "Haruki Murakami",
+                        listPrice: 23
+                    },
+                    {
+                        id: 1004,
+                        title: "Beden Kayıt Tutar",
+                        description: "Ne yazık ki şimdiki psikiyatri anlayışı, yakınmalarınızı anlatmanız ve hekimin de bu yakınmaları düzeltecek bir ilaç önermesi üzerine kurulu. Ancak 'Hiç bir ilaç, kötü geçmiş bir çocukluğu düzeltmiyor'...",
+                        authors: "Bessel A. van der Kolk",
+                        listPrice: 41,
+                    }
+                ]
+            },
+            methods: {
+                // Alt bileşenin $emit ile gönderdiği mesaj sonrası tetiklenen method.
+                updateLikeCount(index) {
+                    selected_title = this.books[index].title;
+                    console.log("`", selected_title, "` isimli kitabı beğendin");
+                    console.log('Üst bileşen(app) için updateLikeCount olayı çağırıldı');
+                    this.likeCount += 1;
+                }
+            },
+        })
+    </script>
+</body>
+
+</html>

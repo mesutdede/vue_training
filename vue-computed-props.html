@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue"></script>
+    <title>Vue Computed Props</title>
+</head>
+
+<body>
+
+    <div id="app" style="text-align: center;">
+        <h1> '{{category}}' Kategorisindeki Ürünler </h1>
+
+        <!-- book_count bir computed property dir. -->
+        <p> <i> {{book_count}} adedi satışta </i> </p>
+
+        <!--
+            div üzerinde mouse bir kitaba denk geldiğinde bu kitabın indis değeri markIndex isimli fonksiyona gönderilir.
+            markIndex fonksiyonu gelen bu indis değerini data elementindeki selectedBookIndex'e set eder.
+            Buna göre computed içerisinde hangi kitap için işlem yapacağımızı anlayabiliriz.
+        -->
+        <div v-for="(book,index) in books" :key="book.id" @mouseover="markIndex(index)">
+            <p>
+                {{book.title}} <i> ${{book.listPrice}} </i>
+            </p>
+        </div>
+
+        <h3> Güncel kurdan fiyatı {{local_price}} liradır. </h3>
+
+    </div>
+
+    <script type="text/javascript">
+        var app = new Vue({
+            el: '#app',
+            data: {
+                category: "Kitap",
+                books: [
+                    { id: 0, title: "Programming C# for Beginners", publisher: "Wrox", listPrice: 19.95, onSale: true },
+                    { id: 1, title: "Patterns of Enterprise Application Architecture", publisher: "Addison Wesley", listPrice: 34.50, onSale: true },
+                    { id: 2, title: "Game Engine Architecture", publisher: "Gregory", listPrice: 45.50, onSale: false },
+                ],
+                selectedBookIndex: 0,
+            },
+            methods:{
+                markIndex(index){
+                    this.selectedBookIndex = index;
+                }
+            },
+            computed: {
+                /*
+                    Computed Property'ler hesaplamaya dahil ettikleri veriler değişmediği sürece cache üzerinde tutulurlar.
+                    local_price, mouseover hareketine göre üzerinde durulan kitabı alıp liste fiyatını bir işlemden geçirir ve geriye bir değer döner.
+                    book_count ise satışta olan kitapların adedini bulur ve geriye döner. 
+                */
+
+                local_price(){
+                    return this.books[this.selectedBookIndex].listPrice * 8.15;
+                },
+
+                book_count(){
+                    count = 0;
+                    for (i = 0; i < this.books.length; i++) {
+                        if(this.books[i].onSale) count++;                        
+                    }
+                    return count;
+                }
+            }
+        })
+    </script>
+
+</body>
+
+</html>
